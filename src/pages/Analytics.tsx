@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, BarChart3, TrendingUp, Target, BrainCircuit, Activity, Clock, Award, CheckCircle2, Swords, Calendar, Loader2, Sparkles, AlertCircle, Info, BookOpen } from 'lucide-react';
 import { useMemo, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { cn, calculatePredictedRank, formatRank, getAdmissionBenchmark } from '../lib/utils';
+import { cn, calculatePredictedRank, formatRank, getAdmissionBenchmark, calculatePercentileAndRankFromMarks } from '../lib/utils';
 import { UserStats } from '../types';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 
@@ -395,25 +395,7 @@ export default function Analytics() {
            </div>
          </div>
          
-         <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 border border-emerald-100 shadow-sm flex flex-col items-center justify-center text-center">
-            <h2 className="text-lg sm:text-xl font-bold mb-6 sm:mb-8 text-emerald-950 uppercase tracking-tight flex items-center gap-2">
-              <Target className="w-6 h-6 text-emerald-600" />
-              Percentile Predictor
-            </h2>
-            <div className="relative w-48 h-48 flex items-center justify-center">
-              <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-emerald-50" />
-                <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" strokeDasharray="502" strokeDashoffset="50" className="text-primary" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-black text-emerald-950">94.2</span>
-                <span className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest mt-1">Percentile</span>
-              </div>
-            </div>
-            <p className="text-sm font-medium text-emerald-900/60 mt-6 max-w-[250px]">
-              Based on your recent mock test performances and accuracy trends across subjects.
-            </p>
-         </div>
+         <PercentilePredictorWidget />
       </div>
     </div>
   );
@@ -459,5 +441,63 @@ function MasteryBar({ label, value, color }: any) {
        </div>
     </div>
   )
+}
+
+function PercentilePredictorWidget() {
+  const [marks, setMarks] = useState<number>(150);
+  const result = calculatePercentileAndRankFromMarks(marks);
+  const strokeDashoffset = 502 - (502 * (result.percentile / 100));
+
+  return (
+    <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 border border-emerald-100 shadow-sm flex flex-col items-center justify-center text-center">
+      <h2 className="text-lg sm:text-xl font-bold mb-6 sm:mb-8 text-emerald-950 uppercase tracking-tight flex items-center gap-2">
+        <Target className="w-6 h-6 text-emerald-600" />
+        Percentile Predictor
+      </h2>
+      <div className="relative w-48 h-48 flex items-center justify-center">
+        <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+          <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-emerald-50" />
+          <circle 
+            cx="96" cy="96" r="80" 
+            stroke="currentColor" 
+            strokeWidth="12" 
+            fill="transparent" 
+            strokeDasharray="502" 
+            strokeDashoffset={strokeDashoffset} 
+            className="text-primary transition-all duration-500 ease-out" 
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-4xl font-black text-emerald-950">{result.percentile.toFixed(2)}</span>
+          <span className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest mt-1">Percentile</span>
+        </div>
+      </div>
+      
+      <div className="w-full mt-8 max-w-sm">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-xs font-bold text-emerald-900/60 uppercase tracking-widest">Target Marks (out of 300)</span>
+          <span className="text-sm font-black text-emerald-950">{marks}</span>
+        </div>
+        <input 
+          type="range" 
+          min="-75" 
+          max="300" 
+          value={marks}
+          onChange={(e) => setMarks(parseInt(e.target.value, 10))}
+          className="w-full h-2 bg-emerald-100 rounded-lg appearance-none cursor-pointer accent-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        />
+        <div className="flex justify-between text-[10px] font-bold text-emerald-900/40 mt-2">
+          <span>-75</span>
+          <span>150</span>
+          <span>300</span>
+        </div>
+      </div>
+
+      <div className="mt-6 pt-6 border-t border-emerald-100/50 w-full">
+        <p className="text-xs font-bold text-emerald-900/60 uppercase tracking-widest mb-1">Expected AIR</p>
+        <p className="text-2xl font-black text-emerald-950">{formatRank(result.rank)}</p>
+      </div>
+    </div>
+  );
 }
 

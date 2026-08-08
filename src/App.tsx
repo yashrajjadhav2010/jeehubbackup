@@ -47,6 +47,7 @@ const MockTests = lazy(() => import("./pages/MockTests"));
 const Study = lazy(() => import("./pages/Study"));
 const MaterialViewer = lazy(() => import("./pages/MaterialViewer"));
 const PeriodicTable = lazy(() => import("./pages/PeriodicTable"));
+const MolecularVisualizer = lazy(() => import("./pages/MolecularVisualizer"));
 const QuestionPage = lazy(() => import("./pages/QuestionPage"));
 const BrowseQuestions = lazy(() => import("./pages/BrowseQuestions"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -86,8 +87,14 @@ function Navbar() {
       } catch (e) {}
     };
     updateRewards();
-    window.addEventListener('rewards_updated', updateRewards);
-    return () => window.removeEventListener('rewards_updated', updateRewards);
+    if (typeof window !== 'undefined' && window) {
+      window.addEventListener('rewards_updated', updateRewards);
+    }
+    return () => {
+      if (typeof window !== 'undefined' && window) {
+        window.removeEventListener('rewards_updated', updateRewards);
+      }
+    };
   }, []);
 
   let operatorName = "Candidate";
@@ -201,7 +208,20 @@ function Navbar() {
                 </Link>
               </SignedOut>
               <SignedIn>
-                <UserButton />
+                <Link
+                  to="/settings"
+                  className="p-2 text-emerald-900/40 hover:text-primary bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-colors"
+                >
+                  <Settings size={18} />
+                </Link>
+                <div className="relative flex items-center justify-center p-1">
+                  {activeRewards?.includes('premium_avatar') && (
+                    <div className="holo-avatar-ring pointer-events-none" />
+                  )}
+                  <div className="relative z-10">
+                    <UserButton />
+                  </div>
+                </div>
               </SignedIn>
             </div>
           </div>
@@ -333,8 +353,9 @@ function Layout({ children }: { children: React.ReactNode }) {
   const isQuizMode = location.pathname.startsWith("/quiz");
   const isSolverMode = location.pathname === "/doubt-solver";
   const isPeriodicTable = location.pathname === "/study/periodic-table";
+  const isMolecularVisualizer = location.pathname === "/study/molecular-visualizer";
   const isAuthRoute = location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up");
-  const isCleanLayout = isQuizMode || isSolverMode || isPeriodicTable || isAuthRoute;
+  const isCleanLayout = isQuizMode || isSolverMode || isPeriodicTable || isMolecularVisualizer || isAuthRoute;
   const [showNameModal, setShowNameModal] = useState(false);
   const [key, setKey] = useState(0); // For forcing re-render of navbar
   
@@ -345,13 +366,14 @@ function Layout({ children }: { children: React.ReactNode }) {
     const initData = async () => {
       if (isSignedIn && user) {
         if (user.fullName) {
-          window.localStorage.setItem("operatorName", user.fullName);
+          if (window.localStorage.getItem("operatorName") !== user.fullName) window.localStorage.setItem("operatorName", user.fullName);
         } else if (user.primaryEmailAddress?.emailAddress) {
-          window.localStorage.setItem("operatorName", user.primaryEmailAddress.emailAddress.split("@")[0]);
+          const emailName = user.primaryEmailAddress.emailAddress.split("@")[0];
+          if (window.localStorage.getItem("operatorName") !== emailName) window.localStorage.setItem("operatorName", emailName);
         }
         
         if (user.imageUrl) {
-          window.localStorage.setItem("operatorPfp", user.imageUrl);
+          if (window.localStorage.getItem("operatorPfp") !== user.imageUrl) window.localStorage.setItem("operatorPfp", user.imageUrl);
         }
         
         // Import sync utilities dynamically to avoid breaking imports at the top
@@ -450,7 +472,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       setIsDataReady(true);
     };
     initData();
-  }, [isSignedIn, user]);
+  }, [isSignedIn, user?.id]);
 
   useEffect(() => {
     try {
@@ -469,9 +491,11 @@ function Layout({ children }: { children: React.ReactNode }) {
         e.preventDefault();
       };
 
-      window.addEventListener("copy", handleCopy as any);
-      window.addEventListener("contextmenu", handleContextMenu);
-      window.addEventListener("storage", handleStorage);
+      if (typeof window !== 'undefined' && window) {
+        window.addEventListener("copy", handleCopy as any);
+        window.addEventListener("contextmenu", handleContextMenu);
+        window.addEventListener("storage", handleStorage);
+      }
 
       const name = localStorage.getItem("operatorName");
       if (!name) {
@@ -479,9 +503,11 @@ function Layout({ children }: { children: React.ReactNode }) {
       }
 
       return () => {
-        window.removeEventListener("copy", handleCopy as any);
-        window.removeEventListener("contextmenu", handleContextMenu);
-        window.removeEventListener("storage", handleStorage);
+        if (typeof window !== 'undefined' && window) {
+          window.removeEventListener("copy", handleCopy as any);
+          window.removeEventListener("contextmenu", handleContextMenu);
+          window.removeEventListener("storage", handleStorage);
+        }
       };
     } catch (e) {
       console.error("Storage access failed:", e);
@@ -728,7 +754,9 @@ export default function App() {
     };
 
     applyStoreEffects();
-    window.addEventListener('rewards_updated', applyStoreEffects);
+    if (typeof window !== 'undefined' && window) {
+      window.addEventListener('rewards_updated', applyStoreEffects);
+    }
 
     // Track total site visits
     const recordVisit = async () => {
@@ -754,7 +782,9 @@ export default function App() {
     recordVisit();
 
     return () => {
-      window.removeEventListener('rewards_updated', applyStoreEffects);
+      if (typeof window !== 'undefined' && window) {
+        window.removeEventListener('rewards_updated', applyStoreEffects);
+      }
     };
   }, []);
 
@@ -779,6 +809,7 @@ export default function App() {
             <Route path="/subjects" element={<Subjects />} />
             <Route path="/study" element={<Study />} />
             <Route path="/study/periodic-table" element={<PeriodicTable />} />
+            <Route path="/study/molecular-visualizer" element={<MolecularVisualizer />} />
             <Route path="/study/:materialId" element={<MaterialViewer />} />
             <Route path="/mock-tests" element={<MockTests />} />
             <Route path="/subjects/:subjectId" element={<ChapterSelection />} />

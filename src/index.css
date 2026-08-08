@@ -403,10 +403,10 @@ img, video {
 .cl-internal-b3al6g,
 .cl-internal-1dauvpw,
 .cl-internal-180wb59,
-.cl-internal-1v83q8a,
-div:has(> a[href*="clerk.com"]) {
+.cl-internal-1v83q8a {
   display: none !important;
 }
+
 
 /* Dark Mode Implementation */
 html.dark-mode {

@@ -33,7 +33,7 @@ export const setupStorageInterceptor = (userId: string) => {
     window.localStorage.setItem = function(key, value) {
       originalSetItem.apply(this, [key, value]);
       
-      if (!isPopulating && syncKeys.includes(key)) {
+      if (!isPopulating && syncKeys.includes(key) && key !== "totalTimeSpent") {
         debouncedSync(userId);
       }
     };
@@ -41,6 +41,8 @@ export const setupStorageInterceptor = (userId: string) => {
 };
 
 let syncTimeout: any;
+let lastSyncString = "";
+let lastSyncTime = 0;
 export const debouncedSync = (userId: string) => {
   clearTimeout(syncTimeout);
   syncTimeout = setTimeout(() => {
@@ -65,6 +67,16 @@ export const syncToFirebase = async (userId: string) => {
     }
   });
   
+  const dataForComparison = { ...data };
+  delete dataForComparison.totalTimeSpent;
+  const dataString = JSON.stringify(dataForComparison);
+  const now = Date.now();
+  if (dataString === lastSyncString && (now - lastSyncTime < 300000)) {
+    return; // Skip if no changes or less than 5 min since last sync of identical data
+  }
+  lastSyncString = dataString;
+  lastSyncTime = now;
+
   try {
     const userDocRef = doc(db, 'user_data', userId);
     

@@ -18,19 +18,10 @@ export function formatTime(seconds: number): string {
   }
 }
 
-export function calculatePredictedRank(stats: any): number {
-  const totalSolved = stats?.totalSolved || 0;
-  const correctAnswers = stats?.correctAnswers || 0;
-  
-  if (totalSolved < 10) return 0; // 0 indicates UNRANKED
-
-  const wrongAnswers = totalSolved - correctAnswers;
-  const currentMarks = (correctAnswers * 4) - (wrongAnswers * 1);
-  
-  // Project to 300 marks (75 questions limit approximation)
-  let expectedMarks = (currentMarks / totalSolved) * 75;
-
-  if (expectedMarks >= 288) return 50; // Special case: Rank 1-50 Contender
+export function calculatePercentileAndRankFromMarks(marks: number): { percentile: number, rank: number } {
+  if (marks >= 288) {
+    return { percentile: 99.999, rank: 50 }; // Special case
+  }
 
   const moderateShiftMap = [
     { marks: 288, percentile: 99.999 },
@@ -57,25 +48,40 @@ export function calculatePredictedRank(stats: any): number {
   for (let i = 0; i < moderateShiftMap.length - 1; i++) {
      const upper = moderateShiftMap[i];
      const lower = moderateShiftMap[i + 1];
-     if (expectedMarks >= lower.marks) {
-        if (expectedMarks >= upper.marks) {
+     if (marks >= lower.marks) {
+        if (marks >= upper.marks) {
            calculatedPercentile = upper.percentile;
         } else {
-           const fraction = (expectedMarks - lower.marks) / (upper.marks - lower.marks);
+           const fraction = (marks - lower.marks) / (upper.marks - lower.marks);
            calculatedPercentile = lower.percentile + fraction * (upper.percentile - lower.percentile);
         }
         break;
      }
   }
 
-  if (expectedMarks <= 15) {
+  if (marks <= 15) {
      calculatedPercentile = Math.max(0, Math.min(15.0, calculatedPercentile));
   }
 
   const defaultCandidates = 1400000;
   const rank = Math.max(1, ((100.0 - calculatedPercentile) * defaultCandidates) / 100.0);
 
-  return Math.floor(rank);
+  return { percentile: calculatedPercentile, rank: Math.floor(rank) };
+}
+
+export function calculatePredictedRank(stats: any): number {
+  const totalSolved = stats?.totalSolved || 0;
+  const correctAnswers = stats?.correctAnswers || 0;
+  
+  if (totalSolved < 10) return 0; // 0 indicates UNRANKED
+
+  const wrongAnswers = totalSolved - correctAnswers;
+  const currentMarks = (correctAnswers * 4) - (wrongAnswers * 1);
+  
+  // Project to 300 marks (75 questions limit approximation)
+  let expectedMarks = (currentMarks / totalSolved) * 75;
+
+  return calculatePercentileAndRankFromMarks(expectedMarks).rank;
 }
 
 export function formatRank(rank: number): string {

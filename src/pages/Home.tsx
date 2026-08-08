@@ -29,7 +29,8 @@ import {
   Pause,
   RotateCcw,
   Coffee,
-  Clock 
+  Clock,
+  Flame
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUser } from '@clerk/clerk-react';
@@ -194,71 +195,89 @@ export default function Home() {
     <div className="space-y-12">
       <section className="relative py-10">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center text-center lg:text-left">
-          <div className="flex-1 space-y-10">
+          <div className="flex-1 space-y-6 md:space-y-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-[2px] bg-primary animate-pulse" />
-                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-emerald-800/40">
-                  JEE Preparation Dashboard
-                </span>
+              <div className="flex items-center justify-center lg:justify-start">
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-100/90 border border-emerald-300/80 shadow-sm backdrop-blur-md">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+                  </span>
+                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-900">
+                    JEE PREPARATION DASHBOARD
+                  </span>
+                  <Sparkles size={14} className="text-emerald-600" />
+                </div>
               </div>
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black heading-display leading-[0.9] text-emerald-950 uppercase tracking-tighter">
-                Performance <br />
-                <span className="text-primary italic relative">
-                  Intelligence
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black heading-display leading-[0.95] text-emerald-950 uppercase tracking-tighter">
+                PERFORMANCE <br />
+                <span className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-700 bg-clip-text text-transparent italic relative inline-block">
+                  INTELLIGENCE
                   <motion.span
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
-                    className="absolute left-0 -bottom-1 md:-bottom-2 h-1 md:h-2 bg-primary/10 rounded-full"
+                    transition={{ duration: 1, delay: 0.2 }}
+                    className="absolute left-0 -bottom-1.5 md:-bottom-2 h-1.5 md:h-2 bg-gradient-to-r from-emerald-500 to-emerald-300 rounded-full shadow-sm"
                   />
                 </span>
               </h1>
             </div>
 
-            <p className="text-emerald-800/60 max-w-lg text-base sm:text-lg md:text-xl font-medium leading-relaxed">
-              Welcome to JEE TAPASYA. Your local JEE prep intelligence is
-              active. Tackle chapters, solve doubts, and build your consistency
-              streak to dominate the competitive arena.
+            <p className="text-emerald-900/80 max-w-lg text-base sm:text-lg font-medium leading-relaxed mx-auto lg:mx-0">
+              Welcome to <span className="font-bold text-emerald-950">JEE TAPASYA</span>. Your personal AI-powered JEE prep terminal is active. Tackle PYQs, build daily practice momentum, and track topic mastery to dominate JEE Main & Advanced.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 md:gap-5 pt-4 md:pt-6">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1">
+              <span className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs font-bold flex items-center gap-1.5 shadow-2xs">
+                <Target size={14} className="text-emerald-600" /> 10,000+ PYQs & DPPs
+              </span>
+              <span className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs font-bold flex items-center gap-1.5 shadow-2xs">
+                <BrainCircuit size={14} className="text-emerald-600" /> AI Weakness Radar
+              </span>
+              <span className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs font-bold flex items-center gap-1.5 shadow-2xs">
+                <Flame size={14} className="text-orange-500" /> Daily Streak Boost
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 pt-2">
               <Link
                 to="/subjects"
-                className="px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 bg-primary text-white preserve-dark rounded-xl sm:rounded-2xl md:rounded-3xl font-black text-[10px] sm:text-[11px] md:text-[12px] tracking-[0.2em] md:tracking-[0.3em] hover:bg-primary-dark hover:-translate-y-1 transition-all shadow-[0_20px_50px_rgba(29,77,41,0.3)] flex items-center justify-center gap-4 group"
+                className="px-8 py-4 sm:py-4.5 bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-900 text-white preserve-dark rounded-2xl font-black text-xs sm:text-sm tracking-widest hover:from-emerald-700 hover:to-emerald-800 hover:-translate-y-0.5 transition-all shadow-[0_12px_30px_rgba(16,185,129,0.3)] flex items-center justify-center gap-3 group border border-emerald-500/30"
               >
-                START PRACTICE{" "}
+                <Rocket size={18} className="text-emerald-300 group-hover:scale-110 transition-transform" />
+                <span>START PRACTICE</span>
                 <ArrowRight
-                  size={20}
-                  className="group-hover:translate-x-2 transition-transform"
+                  size={18}
+                  className="group-hover:translate-x-1.5 transition-transform"
                 />
               </Link>
               <Link
                 to="/analytics"
-                className="px-6 sm:px-8 md:px-12 py-4 sm:py-5 md:py-6 bg-white border border-emerald-100 text-emerald-950 rounded-xl sm:rounded-2xl md:rounded-3xl font-black text-[10px] sm:text-[11px] md:text-[12px] tracking-[0.2em] md:tracking-[0.3em] hover:bg-emerald-50 hover:-translate-y-1 transition-all flex items-center justify-center gap-4 shadow-xl shadow-emerald-950/5"
+                className="px-8 py-4 sm:py-4.5 bg-white border-2 border-emerald-200/80 text-emerald-950 rounded-2xl font-black text-xs sm:text-sm tracking-widest hover:bg-emerald-50/80 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 shadow-md shadow-emerald-950/5"
               >
-                VIEW PERFORMANCE <Activity size={20} />
+                <Activity size={18} className="text-emerald-600" />
+                <span>VIEW PERFORMANCE</span>
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 pt-6 border-t border-emerald-100/50">
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={cn(
-                      "w-4 h-4",
-                      star <= 4
-                        ? "fill-amber-400 text-amber-400"
-                        : star === 5
-                          ? "fill-amber-400/80 text-amber-400"
-                          : "fill-amber-100 text-amber-200",
-                    )}
-                  />
-                ))}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4 border-t border-emerald-200/60">
+              <div className="flex items-center gap-1.5 bg-amber-50/90 px-3 py-1.5 rounded-full border border-amber-200/70 shadow-2xs">
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={cn(
+                        "w-3.5 h-3.5",
+                        star <= 5 ? "fill-amber-400 text-amber-500" : "fill-amber-100 text-amber-200",
+                      )}
+                    />
+                  ))}
+                </div>
+                <span className="font-extrabold text-amber-900 text-xs ml-0.5">4.9/5 Rating</span>
               </div>
-              <div className="text-sm text-emerald-800/80 font-medium">
-                <span className="font-bold text-emerald-950">4.8/5</span>{" "}
-                average rating from students
+              <div className="text-xs text-emerald-900/80 font-bold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-emerald-950 font-black">12,400+</span> Aspirants Active Today
               </div>
             </div>
           </div>

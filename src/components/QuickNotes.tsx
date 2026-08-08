@@ -48,9 +48,13 @@ export function QuickNotes() {
       loadNotes();
     };
 
-    window.addEventListener("storage", handleStorageChange);
+    if (typeof window !== 'undefined' && window) {
+      window.addEventListener("storage", handleStorageChange);
+    }
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      if (typeof window !== 'undefined' && window) {
+        window.removeEventListener("storage", handleStorageChange);
+      }
     };
   }, []);
 

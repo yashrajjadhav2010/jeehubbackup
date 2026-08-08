@@ -1,11 +1,22 @@
 const fs = require('fs');
-let code = fs.readFileSync('src/App.tsx', 'utf8');
 
-// Remove the mistakenly prepended string
-code = code.replace(/^let rCoins = parseInt\(rData\?\.data\?\.coins \|\| '0', 10\);/, "");
+let fileContent = fs.readFileSync('src/App.tsx', 'utf8');
 
-// Fix the actual line where it should be
-code = code.replace(/let rCoins = parseInt\(rData\?\.data\?\.coins \|\| '20', 10\);/, "let rCoins = parseInt(rData?.data?.coins || '0', 10);");
+fileContent = fileContent.replace(
+  'if (user.fullName) {\n          window.localStorage.setItem("operatorName", user.fullName);\n        } else if (user.primaryEmailAddress?.emailAddress) {\n          window.localStorage.setItem("operatorName", user.primaryEmailAddress.emailAddress.split("@")[0]);\n        }',
+  `if (user.fullName) {
+          if (window.localStorage.getItem("operatorName") !== user.fullName) window.localStorage.setItem("operatorName", user.fullName);
+        } else if (user.primaryEmailAddress?.emailAddress) {
+          const emailName = user.primaryEmailAddress.emailAddress.split("@")[0];
+          if (window.localStorage.getItem("operatorName") !== emailName) window.localStorage.setItem("operatorName", emailName);
+        }`
+);
 
-fs.writeFileSync('src/App.tsx', code);
-console.log('App fixed');
+fileContent = fileContent.replace(
+  'if (user.imageUrl) {\n          window.localStorage.setItem("operatorPfp", user.imageUrl);\n        }',
+  `if (user.imageUrl) {
+          if (window.localStorage.getItem("operatorPfp") !== user.imageUrl) window.localStorage.setItem("operatorPfp", user.imageUrl);
+        }`
+);
+
+fs.writeFileSync('src/App.tsx', fileContent);
