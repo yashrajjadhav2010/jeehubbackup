@@ -26,7 +26,7 @@ const getChapterDesign = (chapterId: string, subjectId: string) => {
   if (id.includes('rotation') || id.includes('circular')) return { icon: RefreshCw, color: 'text-orange-500', bg: 'bg-orange-50', groupBg: 'group-hover:bg-orange-500', border: 'border-orange-100', shadow: 'group-hover:shadow-orange-500/30' };
   if (id.includes('electro') || id.includes('current') || id.includes('magnet')) return { icon: Magnet, color: 'text-cyan-500', bg: 'bg-cyan-50', groupBg: 'group-hover:bg-cyan-500', border: 'border-cyan-100', shadow: 'group-hover:shadow-cyan-500/30' };
   if (id.includes('atomic') || id.includes('structure')) return { icon: Atom, color: 'text-purple-500', bg: 'bg-purple-50', groupBg: 'group-hover:bg-purple-500', border: 'border-purple-100', shadow: 'group-hover:shadow-purple-500/30' };
-  if (id.includes('organic') || id.includes('carbon')) return { icon: Hexagon, color: 'text-emerald-500', bg: 'bg-emerald-50', groupBg: 'group-hover:bg-emerald-500', border: 'border-emerald-100', shadow: 'group-hover:shadow-emerald-500/30' };
+  if (id.includes('organic') || id.includes('carbon') || id.includes('isomer')) return { icon: Hexagon, color: 'text-emerald-500', bg: 'bg-emerald-50', groupBg: 'group-hover:bg-emerald-500', border: 'border-emerald-100', shadow: 'group-hover:shadow-emerald-500/30' };
   if (id.includes('wave')) return { icon: Waves, color: 'text-blue-500', bg: 'bg-blue-50', groupBg: 'group-hover:bg-blue-500', border: 'border-blue-100', shadow: 'group-hover:shadow-blue-500/30' };
 
   // Fallbacks by subject
@@ -125,9 +125,7 @@ export default function ChapterSelection() {
         <div className="max-w-4xl mx-auto space-y-4">
           <AnimatePresence>
             {selectedChapter.sets.map((set, idx) => {
-              const currentSetKey = `${subjectId}_${selectedChapter.id}_${set.id}`;
-              const guestSet = localStorage.getItem('guest_attempted_set');
-              const isLocked = !isSignedIn && (guestSet ? guestSet !== currentSetKey : idx > 0);
+              const isLocked = !isSignedIn;
               return (
               <motion.div
                 key={set.id}

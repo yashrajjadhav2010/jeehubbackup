@@ -93,26 +93,10 @@ export default function Quiz() {
       if (!isLoaded) return; // Wait for auth to load
 
       if (subjectId && chapterId && setId) {
-        // Enforce login for sets other than the first
-        const allData = await getAllData();
-        const currentSetKey = `${subjectId}_${chapterId}_${setId}`;
-        
+        // Enforce login for all sets
         if (!isSignedIn) {
-          const guestSet = localStorage.getItem('guest_attempted_set');
-          if (!guestSet) {
-             // First set attempt, record it
-             const chapterSets = allData[subjectId as SubjectId]?.find(c => c.id === chapterId)?.sets || [];
-             const setIdx = chapterSets.findIndex(s => s.id === setId);
-             if (setIdx > 0) {
-               navigate('/sign-in');
-               return;
-             }
-             localStorage.setItem('guest_attempted_set', currentSetKey);
-          } else if (guestSet !== currentSetKey) {
-             // Already attempted a different set
-             navigate('/sign-in');
-             return;
-          }
+          navigate('/sign-in');
+          return;
         }
 
         const data = await loadQuizSet(subjectId, chapterId, setId);
