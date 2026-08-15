@@ -475,6 +475,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   }, [isSignedIn, user?.id]);
 
   useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
     try {
       const handleStorage = () => {
         setKey((prev) => prev + 1);
@@ -499,10 +500,16 @@ function Layout({ children }: { children: React.ReactNode }) {
 
       const name = localStorage.getItem("operatorName");
       if (!name) {
-        setShowNameModal(true);
+        timerId = setTimeout(() => {
+          const currentName = localStorage.getItem("operatorName");
+          if (!currentName) {
+            setShowNameModal(true);
+          }
+        }, 15000);
       }
 
       return () => {
+        if (timerId) clearTimeout(timerId);
         if (typeof window !== 'undefined' && window) {
           window.removeEventListener("copy", handleCopy as any);
           window.removeEventListener("contextmenu", handleContextMenu);
