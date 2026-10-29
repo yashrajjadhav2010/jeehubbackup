@@ -2,17 +2,27 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 
-export const AxiomMascot = ({ size = "md", isThinking = false }: { size?: "sm" | "md" | "lg", isThinking?: boolean }) => {
+export interface AxiomMascotProps {
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  isThinking?: boolean;
+  className?: string;
+}
+
+export const AxiomMascot = ({ size = "md", isThinking = false, className }: AxiomMascotProps) => {
   const scale = {
+    xs: 0.16,
     sm: 0.22,
     md: 0.45,
-    lg: 1.0
+    lg: 0.85,
+    xl: 1.0
   }[size];
 
   const dimensions = {
+    xs: "w-6 h-6",
     sm: "w-8 h-8",
     md: "w-20 h-20",
-    lg: "w-44 h-44"
+    lg: "w-36 h-36",
+    xl: "w-44 h-44"
   }[size];
 
   return (
@@ -27,7 +37,7 @@ export const AxiomMascot = ({ size = "md", isThinking = false }: { size?: "sm" |
         ease: "easeInOut"
       }}
       style={{ willChange: 'transform' }}
-      className={cn(dimensions, "flex items-center justify-center shrink-0 overflow-visible")}
+      className={cn(dimensions, "flex items-center justify-center shrink-0 overflow-visible", className)}
     >
       <div style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
         <svg id="axiom" width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" shapeRendering="geometricPrecision">
